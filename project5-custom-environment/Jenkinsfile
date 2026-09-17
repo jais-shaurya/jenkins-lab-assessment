@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     environment {
         APP_NAME = 'GradeBookApp'
         APP_VERSION = '1.0.0'
@@ -23,7 +27,9 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat 'python -m py_compile app.py'
+                dir('project5-custom-environment') {
+                    bat 'python -m py_compile app.py'
+                }
 
                 echo "${env.APP_NAME} version ${env.APP_VERSION} compiled successfully."
             }
@@ -32,11 +38,11 @@ pipeline {
 
     post {
         success {
-            echo "Project 5 pipeline completed successfully."
+            echo 'Project 5 pipeline completed successfully.'
         }
 
         failure {
-            echo "Project 5 pipeline failed."
+            echo 'Project 5 pipeline failed.'
         }
     }
 }

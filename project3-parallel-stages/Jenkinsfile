@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
 
         stage('Checkout') {
@@ -15,13 +19,17 @@ pipeline {
 
                 stage('Frontend Check') {
                     steps {
-                        bat 'python frontend_check.py'
+                        dir('project3-parallel-stages') {
+                            bat 'python frontend_check.py'
+                        }
                     }
                 }
 
                 stage('Backend Check') {
                     steps {
-                        bat 'python backend_check.py'
+                        dir('project3-parallel-stages') {
+                            bat 'python backend_check.py'
+                        }
                     }
                 }
             }
@@ -29,18 +37,18 @@ pipeline {
 
         stage('Summary') {
             steps {
-                echo "Both frontend and backend checks are complete."
+                echo 'Both frontend and backend checks are complete.'
             }
         }
     }
 
     post {
         success {
-            echo "Project 3 pipeline completed successfully."
+            echo 'Project 3 pipeline completed successfully.'
         }
 
         failure {
-            echo "One or more parallel checks failed."
+            echo 'One or more parallel checks failed.'
         }
     }
 }

@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
 
         stage('Checkout') {
@@ -12,14 +16,16 @@ pipeline {
 
         stage('Generate Report') {
             steps {
-                bat 'python app.py'
+                dir('project2-archive-artifacts') {
+                    bat 'python app.py'
+                }
             }
         }
 
         stage('Archive Report') {
             steps {
                 archiveArtifacts(
-                    artifacts: 'report.txt',
+                    artifacts: 'project2-archive-artifacts/report.txt',
                     fingerprint: true
                 )
             }
@@ -28,12 +34,12 @@ pipeline {
 
     post {
         success {
-            echo "Project 2 completed successfully."
-            echo "report.txt has been archived."
+            echo 'Project 2 completed successfully.'
+            echo 'report.txt has been archived.'
         }
 
         failure {
-            echo "Project 2 pipeline failed."
+            echo 'Project 2 pipeline failed.'
         }
     }
 }

@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     parameters {
         booleanParam(
             name: 'RUN_EXTRA_CHECK',
@@ -20,7 +24,10 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat 'python -m py_compile app.py'
+                dir('project4-conditional-stage') {
+                    bat 'python -m py_compile app.py'
+                }
+
                 echo 'Build successful: app.py compiled with no syntax errors.'
             }
         }
@@ -33,22 +40,24 @@ pipeline {
             }
 
             steps {
-                echo 'Running extra check: verifying greet() output format...'
+                dir('project4-conditional-stage') {
+                    echo 'Running extra check: verifying greet() output format...'
 
-                bat '''
-                    python -c "from app import greet; result=greet('Student'); assert result == 'Hello, Student'; print(result)"
-                '''
+                    bat '''
+                        python -c "from app import greet; result=greet('Student'); assert result == 'Hello, Student'; print(result)"
+                    '''
+                }
             }
         }
     }
 
     post {
         success {
-            echo "Project 4 pipeline completed successfully."
+            echo 'Project 4 pipeline completed successfully.'
         }
 
         failure {
-            echo "Project 4 pipeline failed."
+            echo 'Project 4 pipeline failed.'
         }
     }
 }
