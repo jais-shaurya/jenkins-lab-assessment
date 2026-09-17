@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/jais-shaurya/jenkins-lab-assessment.git'
+            }
+        }
+
+        stage('Generate Report') {
+            steps {
+                bat 'python app.py'
+            }
+        }
+
+        stage('Archive Report') {
+            steps {
+                archiveArtifacts(
+                    artifacts: 'report.txt',
+                    fingerprint: true
+                )
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Project 2 completed successfully."
+            echo "report.txt has been archived."
+        }
+
+        failure {
+            echo "Project 2 pipeline failed."
+        }
+    }
+}

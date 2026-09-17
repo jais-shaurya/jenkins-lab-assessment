@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/jais-shaurya/jenkins-lab-assessment.git'
+            }
+        }
+
+        stage('Parallel Checks') {
+            parallel {
+
+                stage('Frontend Check') {
+                    steps {
+                        bat 'python frontend_check.py'
+                    }
+                }
+
+                stage('Backend Check') {
+                    steps {
+                        bat 'python backend_check.py'
+                    }
+                }
+            }
+        }
+
+        stage('Summary') {
+            steps {
+                echo "Both frontend and backend checks are complete."
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Project 3 pipeline completed successfully."
+        }
+
+        failure {
+            echo "One or more parallel checks failed."
+        }
+    }
+}
